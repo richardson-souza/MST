@@ -188,6 +188,7 @@ public:
 int Processamento::Peso() {
 	int pacientes, setas, v1, v2;
 	float peso, peso_mst;
+	int raiz;
 
 	cin >> pacientes;
 	cin >> setas;
@@ -199,6 +200,8 @@ int Processamento::Peso() {
 		cin >> v2;
 		gt.insere(v1, v2, peso);
 	}
+
+	cin >> raiz;
 
 	return peso_mst;
 }
