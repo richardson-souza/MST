@@ -22,11 +22,14 @@ typedef int Vertice;
 int extraiMinimo(vector<float> key, vector<bool> mstSet, int ordem)
 {
    // Initialize min value
-   int min = INT_MAX, min_index;
+   float min = LONG_MAX;
+   int min_index;
 
-   for (int v = 0; v < ordem; v++)
-     if (mstSet[v] == false && key[v] < min)
+   for (int v = 0; v < ordem; v++){
+     if (mstSet[v] == false && key[v] < min){
          min = key[v], min_index = v;
+     }
+   }
 
    return min_index;
 }
@@ -34,13 +37,12 @@ int extraiMinimo(vector<float> key, vector<bool> mstSet, int ordem)
 // A utility function to print the constructed MST stored in parent[]
 void printMST(vector<int> parent, vector<vector<float> > grafo, int ordem)
 {
-   printf("Edge   Weight\n");
    float acumulador = 0.0;
    for (int i = 1; i < ordem; i++){
-      cout << parent[i] << " - " << i << " " << grafo[i][parent[i]] << endl;
+      //cout << parent[i] << " - " << i << " " << grafo[i][parent[i]] << endl;
    	  acumulador+=grafo[i][parent[i]];
    }
-   cout << endl << "Total = " << acumulador << endl;
+   cout << acumulador;
 }
 
 // Function to construct and print MST for a graph represented using adjacency
@@ -56,8 +58,8 @@ void primMST(vector<vector<float> > grafo, int ordem, int raiz)
         key[i] = INT_MAX, mstSet[i] = false;
 
      // Always include first 1st vertex in MST.
-     key[0] = 0.0;     // Make key 0 so that this vertex is picked as first vertex
-     parent[0] = 0; // First node is always root of MST
+     key[raiz] = 0.0;     // Make key 0 so that this vertex is picked as first vertex
+     parent[0] = -1; // First node is always root of MST
 
      // The MST will have V vertices
      for (int count = 0; count < ordem-1; count++)
@@ -173,7 +175,7 @@ int main() {
 
     GrafoDeTransmissao<float> gt(ordem);
 
-    gt.mostra();
+    //gt.mostra();
     for (int i = 0; i < tamanho; ++i) {
     	cin >> v1;
     	cin >> v2;
@@ -183,7 +185,7 @@ int main() {
 
     cin >> raiz;
 
-    gt.mostra();
+    //gt.mostra();
 
     primMST(gt.getAdj(), ordem, raiz);
 
