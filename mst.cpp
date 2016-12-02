@@ -9,106 +9,92 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <list>
 #include <climits>
 #include <iomanip>
 using namespace std;
 
 typedef int Vertice;
 
-template<class T>
-class Pacientes {
-private:
-	Vertice valor;
-	Vertice predecessor;
-	vector<Vertice> adjacente;
-	vector<float> peso;
 
-public:
-	void bolha();
+//-----------------------
 
-	bool estaOrdenado();
+int extraiMinimo(vector<float> key, vector<bool> mstSet, int ordem)
+{
+   // Initialize min value
+   int min = INT_MAX, min_index;
 
-	Pacientes() {
-	}
-	;
+   for (int v = 0; v < ordem; v++)
+     if (mstSet[v] == false && key[v] < min)
+         min = key[v], min_index = v;
 
-	Pacientes(Vertice valor) :
-		valor(valor) {
-	}
-
-	~Pacientes() {
-		adjacente.~vector();
-		peso.~vector();
-	}
-
-	Vertice getVertice() {
-		return valor;
-	}
-
-	void setVertice(Vertice valor) {
-		this->valor = valor;
-	}
-
-	Vertice getPredecessor() {
-		return predecessor;
-	}
-
-	void setPredecessor(Vertice predecessor) {
-		this->predecessor = predecessor;
-	}
-
-	vector<T> getAdjacente() {
-		return adjacente;
-	}
-
-	void setAdjacente(T v) {
-		this->adjacente.push_back(v);
-	}
-
-	vector<float> getPeso() {
-		return peso;
-	}
-
-	void setPeso(T p) {
-		this->peso.push_back(p);
-	}
-
-};
-
-template<class T>
-bool Pacientes<T>::estaOrdenado() {
-	bool ordenado = true;
-	for (size_t i = 0; i < adjacente.size() - 1; ++i) {
-		if (adjacente[i] >= adjacente[i + 1]) {
-			ordenado = false;
-			break;
-		}
-	}
-	return ordenado;
+   return min_index;
 }
 
-template<class T>
-void Pacientes<T>::bolha() {
-	for (int i = adjacente.size() - 1; i > 0; i--) {
-		for (int j = 0; j < i; j++) {
-			if (adjacente[j] > adjacente[j + 1]) {
-				Vertice aux = adjacente[j];
-				adjacente[j] = adjacente[j + 1];
-				adjacente[j + 1] = aux;
-				float aux2 = peso[j];
-				peso[j] = peso[j + 1];
-				peso[j + 1] = aux2;
-			}
-		}
-	}
+// A utility function to print the constructed MST stored in parent[]
+void printMST(vector<int> parent, vector<vector<float> > grafo, int ordem)
+{
+   printf("Edge   Weight\n");
+   float acumulador = 0.0;
+   for (int i = 1; i < ordem; i++){
+      cout << parent[i] << " - " << i << " " << grafo[i][parent[i]] << endl;
+   	  acumulador+=grafo[i][parent[i]];
+   }
+   cout << endl << "Total = " << acumulador << endl;
 }
+
+// Function to construct and print MST for a graph represented using adjacency
+// matrix representation
+void primMST(vector<vector<float> > grafo, int ordem, int raiz)
+{
+     vector<int> parent(ordem); // Array to store constructed MST
+     vector<float> key(ordem);   // Key values used to pick minimum weight edge in cut
+     vector <bool> mstSet(ordem);  // To represent set of vertices not yet included in MST
+
+     // Initialize all keys as INFINITE
+     for (int i = 0; i < ordem; i++)
+        key[i] = INT_MAX, mstSet[i] = false;
+
+     // Always include first 1st vertex in MST.
+     key[0] = 0.0;     // Make key 0 so that this vertex is picked as first vertex
+     parent[0] = 0; // First node is always root of MST
+
+     // The MST will have V vertices
+     for (int count = 0; count < ordem-1; count++)
+     {
+        // Pick the minimum key vertex from the set of vertices
+        // not yet included in MST
+        int u = extraiMinimo(key, mstSet, ordem);
+
+        // Add the picked vertex to the MST Set
+        mstSet[u] = true;
+
+        // Update key value and parent index of the adjacent vertices of
+        // the picked vertex. Consider only those vertices which are not yet
+        // included in MST
+        for (int v = 0; v < ordem; v++)
+
+           // graph[u][v] is non zero only for adjacent vertices of m
+           // mstSet[v] is false for vertices not yet included in MST
+           // Update the key only if graph[u][v] is smaller than key[v]
+          if (grafo[u][v] && mstSet[v] == false && grafo[u][v] < key[v])
+             parent[v]  = u, key[v] = grafo[u][v];
+     }
+
+     // print the constructed MST
+     printMST(parent, grafo, ordem);
+}
+
+//--------------------------------
+
+
+
 
 template<class T>
 class GrafoDeTransmissao {
 private:
-	Pacientes<T> *adj;
+	vector<vector<T> > adj;
 	int ordem, tam;
-	float soma;
 
 public:
 	GrafoDeTransmissao(int);
@@ -116,16 +102,12 @@ public:
 	void preenche();
 	void insere(Vertice, Vertice, float);
 	void destroy();
+	void mostra();
 
-	~GrafoDeTransmissao() {
-		delete adj;
-		soma = 0.0;
-	}
-
-	Pacientes<T>* getAdj() {
+	vector<vector<T> > getAdj() {
 		return adj;
 	}
-	void setAdj(Pacientes<T>* adj) {
+	void setAdj(vector<vector<T> > adj) {
 		this->adj = adj;
 	}
 	int getOrdem() {
@@ -140,9 +122,6 @@ public:
 	void setTam(int tam) {
 		this->tam = tam;
 	}
-	float getAcum() {
-		return soma;
-	}
 };
 
 template<class T>
@@ -154,59 +133,59 @@ GrafoDeTransmissao<T>::GrafoDeTransmissao(int ordem) {
 template<class T>
 void GrafoDeTransmissao<T>::iniciar(int ordem) {
 	this->ordem = ordem;
-	adj = new Pacientes<T> [ordem + 1];
+	for(int i = 0; i < ordem; i++){
+	    vector<T> aux(ordem);
+	    adj.push_back(aux);
+	}
 }
 
 template<class T>
 void GrafoDeTransmissao<T>::preenche() {
-	for (int i = 1; i <= ordem; i++) {
-		Pacientes<int> p(i);
-		adj[i] = p;
+	for (int i = 0; i < ordem; i++) {
+	    for(int j = 0; j < ordem; j++){
+		    adj[i][j] = 0.0;
+		}
+	}
+}
+
+template<class T>
+void GrafoDeTransmissao<T>::mostra() {
+    for (int i = 0; i < ordem; i++) {
+	    for(int j = 0; j < ordem; j++){
+	        cout.precision(2);
+		    cout << fixed << adj[i][j] << "   ";
+		}
+		cout << endl;
 	}
 }
 
 template<class T>
 void GrafoDeTransmissao<T>::insere(Vertice v1, Vertice v2, float peso) {
-	adj[v1].setAdjacente(v2);
-	adj[v1].setPeso(peso);
-	adj[v2].setAdjacente(v1);
-	adj[v2].setPeso(peso);
-}
-
-class Processamento {
-
-public:
-	Processamento() {
-	}
-	;
-
-	int Peso();
-};
-
-
-
-int Processamento::Peso() {
-	int pacientes, setas, v1, v2;
-	float peso, peso_mst;
-	int raiz;
-
-	cin >> pacientes;
-	cin >> setas;
-
-	GrafoDeTransmissao<int> gt(pacientes);
-
-	for (int i = 0; i < setas; ++i) {
-		cin >> v1;
-		cin >> v2;
-		gt.insere(v1, v2, peso);
-	}
-
-	cin >> raiz;
-
-	return peso_mst;
+	adj[v1][v2] = peso;
+	adj[v2][v1] = peso;
 }
 
 int main() {
+    int ordem, tamanho, v1, v2, raiz;
+    float peso;
+    cin >> ordem;
+    cin >> tamanho;
+
+    GrafoDeTransmissao<float> gt(ordem);
+
+    gt.mostra();
+    for (int i = 0; i < tamanho; ++i) {
+    	cin >> v1;
+    	cin >> v2;
+    	cin >> peso;
+    	gt.insere(v1,v2,peso);
+	}
+
+    cin >> raiz;
+
+    gt.mostra();
+
+    primMST(gt.getAdj(), ordem, raiz);
 
 	return 0;
 }
