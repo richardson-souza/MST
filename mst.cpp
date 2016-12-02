@@ -58,7 +58,7 @@ void primMST(vector<vector<float> > grafo, int ordem, int raiz)
         key[i] = INT_MAX, mstSet[i] = false;
 
      // Always include first 1st vertex in MST.
-     key[raiz] = 0.0;     // Make key 0 so that this vertex is picked as first vertex
+     key[0] = 0.0;     // Make key 0 so that this vertex is picked as first vertex
      parent[0] = -1; // First node is always root of MST
 
      // The MST will have V vertices
