@@ -37,9 +37,11 @@ void MST::soma(vector<int> arvore, vector<vector<float> > grafo, int ordem)
 {
    float acumulador = 0.0;
    int indice = 0;
-   for (int i = 1; i < ordem; i++){
+   for (int i = 0; i < ordem; i++){
 	   indice = arvore[i];
-	   acumulador+=grafo[i][indice];
+	   if(indice != -1){
+		   acumulador+=grafo[i][indice];
+	   }
    }
    cout << acumulador;
 }
@@ -56,8 +58,8 @@ void MST::prim(vector<vector<float> > grafo, int ordem, int raiz)
         vertices[i] = 0;
      }
 
-     chaves[0] = 0.0;
-     arvore[0] = raiz;
+     chaves[raiz] = 0.0;
+     arvore[raiz] = -1;
 
      for (int j = 0; j < ordem; j++)
      {
