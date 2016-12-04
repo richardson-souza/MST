@@ -9,6 +9,7 @@ using namespace std;
 typedef int Vertice;
 const float INFINITO = LONG_MAX;
 
+template<class T>
 class MST{
 public:
 	MST(){
@@ -19,7 +20,8 @@ public:
 	void prim(vector<vector<float> >, int, int);
 };
 
-int MST::extraiMinimo(vector<float> chaves, vector<int> vertices, int ordem)
+template<class T>
+int MST<T>::extraiMinimo(vector<float> chaves, vector<int> vertices, int ordem)
 {
    float valor_minimo = LONG_MAX;
    int indice_minimo;
@@ -33,7 +35,8 @@ int MST::extraiMinimo(vector<float> chaves, vector<int> vertices, int ordem)
    return indice_minimo;
 }
 
-void MST::soma(vector<int> arvore, vector<vector<float> > grafo, int ordem)
+template<class T>
+void MST<T>::soma(vector<int> arvore, vector<vector<float> > grafo, int ordem)
 {
    float acumulador = 0.0;
    int indice = 0;
@@ -43,10 +46,12 @@ void MST::soma(vector<int> arvore, vector<vector<float> > grafo, int ordem)
 		   acumulador+=grafo[i][indice];
 	   }
    }
-   cout << acumulador;
+   cout.precision(2);
+   cout << fixed << acumulador;
 }
 
-void MST::prim(vector<vector<float> > grafo, int ordem, int raiz)
+template<class T>
+void MST<T>::prim(vector<vector<float> > grafo, int ordem, int raiz)
 {
      vector<int> arvore(ordem);
      vector<float> chaves(ordem);
@@ -136,41 +141,44 @@ void GrafoDeTransmissao<T>::preenche() {
 }
 
 template<class T>
-void GrafoDeTransmissao<T>::mostra() {
-    for (int i = 0; i < ordem; i++) {
-	    for(int j = 0; j < ordem; j++){
-	        cout.precision(2);
-		    cout << fixed << adj[i][j] << "   ";
-		}
-		cout << endl;
-	}
-}
-
-template<class T>
 void GrafoDeTransmissao<T>::insere(Vertice v1, Vertice v2, float peso) {
 	adj[v1][v2] = peso;
 	adj[v2][v1] = peso;
 }
 
-int main() {
-    int ordem, tamanho, v1, v2, raiz;
-    float peso;
-    cin >> ordem;
-    cin >> tamanho;
+class Processamento{
+public:
+	int ordem, tamanho, v1, v2, raiz;
+	float peso;
 
-    GrafoDeTransmissao<float> gt(ordem);
-    MST mst;
+	Processamento(){
+	};
 
-    for (int i = 0; i < tamanho; ++i) {
-    	cin >> v1;
-    	cin >> v2;
-    	cin >> peso;
-    	gt.insere(v1,v2,peso);
+	void Resultado(){
+		cin >> ordem;
+		cin >> tamanho;
+
+		GrafoDeTransmissao<float> grafotransmissao(ordem);
+		MST<float> mst;
+
+		for (int i = 0; i < tamanho; ++i) {
+	    	cin >> v1;
+	    	cin >> v2;
+	    	cin >> peso;
+	    	grafotransmissao.insere(v1,v2,peso);
+		}
+
+		cin >> raiz;
+
+		mst.prim(grafotransmissao.getAdj(), ordem, raiz);
 	}
+};
 
-    cin >> raiz;
+int main() {
 
-    mst.prim(gt.getAdj(), ordem, raiz);
+	Processamento processamento;
+
+	processamento.Resultado();
 
 	return 0;
 }
