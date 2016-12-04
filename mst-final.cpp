@@ -16,8 +16,8 @@ public:
 	};
 
 	int extraiMinimo(vector<float>, vector<int>, int);
-	void soma(vector<int>, vector<vector<float> >, int);
-	void prim(vector<vector<float> >, int, int);
+	float pesoMST(vector<int>, vector<vector<float> >, int);
+	float prim(vector<vector<float> >, int, int);
 };
 
 template<class T>
@@ -36,26 +36,27 @@ int MST<T>::extraiMinimo(vector<float> chaves, vector<int> vertices, int ordem)
 }
 
 template<class T>
-void MST<T>::soma(vector<int> arvore, vector<vector<float> > grafo, int ordem)
+float MST<T>::pesoMST(vector<int> arvore, vector<vector<float> > grafo, int ordem)
 {
-   float acumulador = 0.0;
+   float peso = 0.0;
    int indice = 0;
    for (int i = 0; i < ordem; i++){
 	   indice = arvore[i];
 	   if(indice != -1){
-		   acumulador+=grafo[i][indice];
+		   peso+=grafo[i][indice];
 	   }
    }
-   cout.precision(2);
-   cout << fixed << acumulador;
+
+   return peso;
 }
 
 template<class T>
-void MST<T>::prim(vector<vector<float> > grafo, int ordem, int raiz)
+float MST<T>::prim(vector<vector<float> > grafo, int ordem, int raiz)
 {
      vector<int> arvore(ordem);
      vector<float> chaves(ordem);
      vector<int> vertices(ordem);
+     float peso = 0.0;
 
      for (int i = 0; i < ordem; i++)
      {
@@ -79,7 +80,10 @@ void MST<T>::prim(vector<vector<float> > grafo, int ordem, int raiz)
           }
         }
      }
-     soma(arvore, grafo, ordem);
+
+     peso = pesoMST(arvore, grafo, ordem);
+
+     return peso;
 }
 
 template<class T>
@@ -149,7 +153,7 @@ void GrafoDeTransmissao<T>::insere(Vertice v1, Vertice v2, float peso) {
 class Processamento{
 public:
 	int ordem, tamanho, v1, v2, raiz;
-	float peso;
+	float peso, resultado;
 
 	Processamento(){
 	};
@@ -170,7 +174,10 @@ public:
 
 		cin >> raiz;
 
-		mst.prim(grafotransmissao.getAdj(), ordem, raiz);
+		resultado = mst.prim(grafotransmissao.getAdj(), ordem, raiz);
+
+		cout.precision(2);
+		cout << fixed << resultado;
 	}
 };
 
