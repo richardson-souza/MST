@@ -148,13 +148,13 @@ void GrafoDeTransmissao<T>::insere(Vertice v1, Vertice v2, float peso) {
 class Processamento {
 public:
 	int ordem, tamanho, v1, v2, raiz;
-	float peso, resultado;
+	float peso, resp;
 
 	Processamento() {
 	}
 	;
 
-	void Resultado() {
+	void resultado() {
 		cin >> ordem;
 		cin >> tamanho;
 
@@ -170,10 +170,10 @@ public:
 
 		cin >> raiz;
 
-		resultado = mst.prim(grafotransmissao.getAdj(), ordem, raiz);
+		resp = mst.prim(grafotransmissao.getAdj(), ordem, raiz);
 
 		cout.precision(2);
-		cout << fixed << resultado;
+		cout << fixed << resp;
 	}
 };
 
@@ -181,7 +181,7 @@ int main() {
 
 	Processamento processamento;
 
-	processamento.Resultado();
+	processamento.resultado();
 
 	return 0;
 }
